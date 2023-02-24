@@ -1,11 +1,4 @@
-import {
-  Application,
-  json,
-  NextFunction,
-  Request,
-  Response,
-  urlencoded,
-} from 'express';
+import { Application, json, NextFunction, Request, Response, urlencoded } from 'express';
 import { config } from './config';
 
 import http from 'http';
@@ -27,10 +20,7 @@ import Logger from 'bunyan';
 
 //	routes
 import applicationRoutes from './routes';
-import {
-  CustomError,
-  IErrorResponse,
-} from './shared/global/helpers/error-handler';
+import { CustomError, IErrorResponse } from './shared/global/helpers/error-handler';
 
 const log: Logger = config.createLogger('server');
 
@@ -55,7 +45,7 @@ export class ChattyServer {
         name: 'session',
         keys: [config.SECRET_KEY_ONE!, config.SECRET_KEY_TWO!],
         maxAge: 24 * 7 * 3600000,
-        secure: config.NODE_ENV !== 'development',
+        secure: config.NODE_ENV !== 'development'
       })
     );
     app.use(hpp());
@@ -65,7 +55,7 @@ export class ChattyServer {
         origin: config.CLIENT_URL,
         credentials: true,
         optionsSuccessStatus: 200,
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
       })
     );
   }
@@ -82,24 +72,15 @@ export class ChattyServer {
 
   private globalErrorHandler(app: Application): void {
     app.all('*', (req: Request, res: Response) => {
-      res
-        .status(HTTP_STATUS.NOT_FOUND)
-        .json({ message: `${req.originalUrl} not found!` });
+      res.status(HTTP_STATUS.NOT_FOUND).json({ message: `${req.originalUrl} not found!` });
     });
-    app.use(
-      (
-        error: IErrorResponse,
-        req: Request,
-        res: Response,
-        next: NextFunction
-      ) => {
-        log.error(error);
-        if (error instanceof CustomError) {
-          return res.status(error.statusCode).json(error.serializeErrors());
-        }
-        next();
+    app.use((error: IErrorResponse, req: Request, res: Response, next: NextFunction) => {
+      log.error(error);
+      if (error instanceof CustomError) {
+        return res.status(error.statusCode).json(error.serializeErrors());
       }
-    );
+      next();
+    });
   }
 
   private async startServer(app: Application): Promise<void> {
@@ -117,8 +98,8 @@ export class ChattyServer {
     const io: Server = new Server(httpServer, {
       cors: {
         origin: config.CLIENT_URL,
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-      },
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+      }
     });
     const pubClient = createClient({ url: config.REDIS_HOST });
     const subClient = pubClient.duplicate();
@@ -129,9 +110,7 @@ export class ChattyServer {
 
   private startHttpServer(httpServer: http.Server): void {
     log.info(`Server has started with process ${process.pid}`);
-    httpServer.listen(config.SERVER_PORT, () =>
-      log.info(`Server listening on port ${config.SERVER_PORT}`)
-    );
+    httpServer.listen(config.SERVER_PORT, () => log.info(`Server listening on port ${config.SERVER_PORT}`));
   }
 
   private socketIOConnections(io: Server): void {}

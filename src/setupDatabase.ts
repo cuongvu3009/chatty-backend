@@ -11,7 +11,7 @@ const databaseConnection = () => {
     mongoose
       .set('strictQuery', true)
       .connect(`${config.DATABASE_URL}`)
-      .then(() => log.info(`Database is succesfully connected!`))
+      .then(() => log.info('Database is succesfully connected!'))
       .catch((err) => {
         log.error(err);
         return process.exit(1);
