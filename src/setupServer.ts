@@ -1,4 +1,6 @@
 import { Application, json, urlencoded } from 'express';
+import { config } from './config';
+
 import http from 'http';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -7,11 +9,14 @@ import cookieSession from 'cookie-session';
 import HTTP_STATUS from 'http-status-codes';
 import compression from 'compression';
 import 'express-async-errors';
-import { config } from './config';
 
+//	socket.io/redis-adapter
 import { Server } from 'socket.io';
 import { createClient } from 'redis';
 import { createAdapter } from '@socket.io/redis-adapter';
+
+//	routes
+import applicationRoutes from './routes';
 
 export class ChattyServer {
   private app: Application;
@@ -55,7 +60,9 @@ export class ChattyServer {
     app.use(urlencoded({ extended: true, limit: '50mb' }));
   }
 
-  private routesMiddleware(app: Application): void {}
+  private routesMiddleware(app: Application): void {
+    applicationRoutes(app);
+  }
 
   private globalErrorHandler(app: Application): void {}
 
