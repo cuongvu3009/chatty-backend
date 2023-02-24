@@ -10,6 +10,7 @@ class Config {
   public NODE_ENV: string | undefined;
   public CLIENT_URL: string | undefined;
   public SERVER_PORT: string | undefined;
+  public REDIS_HOST: string | undefined;
 
   private readonly DEFAULT_DATABASE_URL =
     'mongodb+srv://cuong:1234@nodeexpressproject.nlzou.mongodb.net/Chatty-App?retryWrites=true&w=majority';
@@ -18,12 +19,13 @@ class Config {
 
   constructor() {
     this.DATABASE_URL = process.env.DATABASE_URl || this.DEFAULT_DATABASE_URL;
-    this.JWT_TOKEN = process.env.JWT_TOKEN;
-    this.SECRET_KEY_ONE = process.env.SECRET_KEY_ONE;
-    this.SECRET_KEY_TWO = process.env.SECRET_KEY_TWO;
+    this.JWT_TOKEN = process.env.JWT_TOKEN || '';
+    this.SECRET_KEY_ONE = process.env.SECRET_KEY_ONE || '';
+    this.SECRET_KEY_TWO = process.env.SECRET_KEY_TWO || '';
     this.NODE_ENV = process.env.NODE_ENV || this.DEFAULT_NODE_ENV;
     this.CLIENT_URL = process.env.CLIENT_URL || this.DEFAULT_CLIENT_URL;
-    this.SERVER_PORT = process.env.SERVER_PORT;
+    this.SERVER_PORT = process.env.SERVER_PORT || '';
+    this.REDIS_HOST = process.env.REDIS_HOST || '';
   }
 
   //	make sure all env variable in config exist
