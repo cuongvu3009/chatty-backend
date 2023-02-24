@@ -1,4 +1,11 @@
-import { Application, json, urlencoded } from 'express';
+import {
+  Application,
+  json,
+  NextFunction,
+  Request,
+  Response,
+  urlencoded,
+} from 'express';
 import { config } from './config';
 
 import http from 'http';
@@ -17,6 +24,10 @@ import { createAdapter } from '@socket.io/redis-adapter';
 
 //	routes
 import applicationRoutes from './routes';
+import {
+  CustomError,
+  IErrorResponse,
+} from './shared/global/helpers/error-handler';
 
 export class ChattyServer {
   private app: Application;
@@ -64,7 +75,27 @@ export class ChattyServer {
     applicationRoutes(app);
   }
 
-  private globalErrorHandler(app: Application): void {}
+  private globalErrorHandler(app: Application): void {
+    app.all('*', (req: Request, res: Response) => {
+      res
+        .status(HTTP_STATUS.NOT_FOUND)
+        .json({ message: `${req.originalUrl} not found!` });
+    });
+    app.use(
+      (
+        error: IErrorResponse,
+        req: Request,
+        res: Response,
+        next: NextFunction
+      ) => {
+        console.log(error);
+        if (error instanceof CustomError) {
+          return res.status(error.statusCode).json(error.serializeErrors());
+        }
+        next();
+      }
+    );
+  }
 
   private async startServer(app: Application): Promise<void> {
     try {
