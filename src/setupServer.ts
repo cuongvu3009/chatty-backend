@@ -20,7 +20,8 @@ import Logger from 'bunyan';
 
 //	routes
 import applicationRoutes from './routes';
-import { CustomError, IErrorResponse } from './shared/global/helpers/error-handler';
+
+import { IErrorResponse, CustomError } from './shared/global/helpers/error-handler';
 
 const log: Logger = config.createLogger('server');
 
@@ -113,5 +114,7 @@ export class ChattyServer {
     httpServer.listen(config.SERVER_PORT, () => log.info(`Server listening on port ${config.SERVER_PORT}`));
   }
 
-  private socketIOConnections(io: Server): void {}
+  private socketIOConnections(io: Server): void {
+    log.info('socketIOConnection');
+  }
 }
