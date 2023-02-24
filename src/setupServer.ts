@@ -22,12 +22,17 @@ import { Server } from 'socket.io';
 import { createClient } from 'redis';
 import { createAdapter } from '@socket.io/redis-adapter';
 
+//	logger
+import Logger from 'bunyan';
+
 //	routes
 import applicationRoutes from './routes';
 import {
   CustomError,
   IErrorResponse,
 } from './shared/global/helpers/error-handler';
+
+const log: Logger = config.createLogger('server');
 
 export class ChattyServer {
   private app: Application;
@@ -88,7 +93,7 @@ export class ChattyServer {
         res: Response,
         next: NextFunction
       ) => {
-        console.log(error);
+        log.error(error);
         if (error instanceof CustomError) {
           return res.status(error.statusCode).json(error.serializeErrors());
         }
@@ -104,7 +109,7 @@ export class ChattyServer {
       this.startHttpServer(httpServer);
       this.socketIOConnections(socketIO);
     } catch (error) {
-      console.log(error);
+      log.error(error);
     }
   }
 
@@ -123,9 +128,9 @@ export class ChattyServer {
   }
 
   private startHttpServer(httpServer: http.Server): void {
-    console.log(`Server has started with process ${process.pid}`);
+    log.info(`Server has started with process ${process.pid}`);
     httpServer.listen(config.SERVER_PORT, () =>
-      console.log(`Server listening on port ${config.SERVER_PORT}`)
+      log.info(`Server listening on port ${config.SERVER_PORT}`)
     );
   }
 

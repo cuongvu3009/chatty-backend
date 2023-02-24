@@ -1,14 +1,19 @@
 import mongoose from 'mongoose';
 import { config } from './config';
 
+//	logger
+import Logger from 'bunyan';
+
+const log: Logger = config.createLogger('setupDatabase');
+
 const databaseConnection = () => {
   const connect = () => {
     mongoose
       .set('strictQuery', true)
       .connect(`${config.DATABASE_URL}`)
-      .then(() => console.log(`Database is succesfully connected!`))
+      .then(() => log.info(`Database is succesfully connected!`))
       .catch((err) => {
-        console.log(err);
+        log.error(err);
         return process.exit(1);
       });
   };
