@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import bunyan from 'bunyan';
+import cloudinary from 'cloudinary';
 
 dotenv.config();
 
@@ -12,6 +13,9 @@ class Config {
   public CLIENT_URL: string | undefined;
   public SERVER_PORT: string | undefined;
   public REDIS_HOST: string | undefined;
+  public CLOUDINARY_NAME: string | undefined;
+  public CLOUDINARY_API_KEY: string | undefined;
+  public CLOUDINARY_API_SECRET: string | undefined;
 
   private readonly DEFAULT_DATABASE_URL =
     'mongodb+srv://cuong:1234@nodeexpressproject.nlzou.mongodb.net/Chatty-App?retryWrites=true&w=majority';
@@ -27,6 +31,9 @@ class Config {
     this.CLIENT_URL = process.env.CLIENT_URL || this.DEFAULT_CLIENT_URL;
     this.SERVER_PORT = process.env.SERVER_PORT || '';
     this.REDIS_HOST = process.env.REDIS_HOST || '';
+    this.CLOUDINARY_NAME = process.env.CLOUDINARY_NAME || '';
+    this.CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY || '';
+    this.CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET || '';
   }
 
   //	logger
@@ -41,6 +48,14 @@ class Config {
         throw new Error(`Configuration ${key} is undefined`);
       }
     }
+  }
+
+  public cloudinaryConfig(): void {
+    cloudinary.v2.config({
+      cloud_name: this.CLOUDINARY_NAME,
+      api_key: this.CLOUDINARY_API_KEY,
+      api_secret: this.CLOUDINARY_API_SECRET
+    });
   }
 }
 
