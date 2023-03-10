@@ -73,9 +73,10 @@ export class ChattyServer {
 
   private globalErrorHandler(app: Application): void {
     app.all('*', (req: Request, res: Response) => {
-      res.status(HTTP_STATUS.NOT_FOUND).json({ message: `${req.originalUrl} not found!` });
+      res.status(HTTP_STATUS.NOT_FOUND).json({ message: `${req.originalUrl} not found` });
     });
-    app.use((error: IErrorResponse, req: Request, res: Response, next: NextFunction) => {
+
+    app.use((error: IErrorResponse, _req: Request, res: Response, next: NextFunction) => {
       log.error(error);
       if (error instanceof CustomError) {
         return res.status(error.statusCode).json(error.serializeErrors());
@@ -110,10 +111,12 @@ export class ChattyServer {
   }
 
   private startHttpServer(httpServer: http.Server): void {
+    log.info(`Worker with process id of ${process.pid} has started...`);
     log.info(`Server has started with process ${process.pid}`);
-    httpServer.listen(config.SERVER_PORT, () => log.info(`Server listening on port ${config.SERVER_PORT}`));
+    httpServer.listen(config.SERVER_PORT, () => {
+      log.info(`Server running on port ${config.SERVER_PORT}`);
+    });
   }
-
   private socketIOConnections(io: Server): void {
     log.info('socketIOConnection');
   }

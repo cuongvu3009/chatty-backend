@@ -8,6 +8,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Helpers } from '@root/shared/global/helpers/helpers';
 import { UploadApiResponse } from 'cloudinary';
 import { uploads } from '@root/shared/global/helpers/cloudinary-upload';
+import HTTP_STATUS from 'http-status-codes';
 
 export class Signup {
   @joiValidation(signupSchema)
@@ -31,10 +32,11 @@ export class Signup {
     });
     const result: UploadApiResponse = (await uploads(avatarImage, `${userObjectId}`, true, true)) as UploadApiResponse;
 
-    //  https://res.cloudinary.com/123/userObjectId
     if (!result.public_id) {
       throw new BadRequestError('File upload: Error occurred. Try again.');
     }
+
+    res.status(HTTP_STATUS.CREATED).json({ message: 'User created!', authData });
   }
 
   private signupData(data: ISignUpData): IAuthDocument {
