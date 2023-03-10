@@ -3,6 +3,7 @@ import { config } from './config';
 
 //	logger
 import Logger from 'bunyan';
+import { redisConnection } from '@service/redis/redis.connection';
 
 const log: Logger = config.createLogger('setupDatabase');
 
@@ -11,7 +12,10 @@ const databaseConnection = () => {
     mongoose
       .set('strictQuery', true)
       .connect(`${config.DATABASE_URL}`)
-      .then(() => log.info('Database is succesfully connected!'))
+      .then(() => {
+        log.info('Database is succesfully connected!');
+        redisConnection.connect();
+      })
       .catch((err) => {
         log.error(err);
         return process.exit(1);
