@@ -11,6 +11,8 @@ import { uploads } from '@root/shared/global/helpers/cloudinary-upload';
 import HTTP_STATUS from 'http-status-codes';
 import { UserCache } from '@service/redis/user.cache';
 import { IUserDocument } from '@user/interfaces/user.interface';
+import { omit } from 'lodash';
+import { authQueue } from '@service/queues/auth.queue';
 
 const userCache: UserCache = new UserCache();
 
@@ -45,6 +47,9 @@ export class SignUp {
     userDataForCache.profilePicture = `https://res.cloudinary.com/dbgfpa4go/image/upload/v${result.version}/${userObjectId}`;
     await userCache.saveUserToCache(`${userObjectId}`, uId, userDataForCache);
 
+    //  Add to Database, since I am not add all user info to db so I use omit from lodash
+    omit(userDataForCache, ['uId', 'username', 'email', 'avatarColor', 'password']);
+    authQueue.addAuthUserJob('addAuthUserToDB', { value: userDataForCache });
     res.status(HTTP_STATUS.CREATED).json({ message: 'User created!', user: userDataForCache });
   }
 
